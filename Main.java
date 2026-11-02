@@ -9,8 +9,8 @@ public class Main {
 		String password;
 		String role; // "ADMIN", "INSTRUCTOR", "STUDENT"
 
-		User(String name, String id, String password, String role) {
-			this.name = name;
+		User(String named, String id, String password, String role) {
+			this.name = named;
 			this.id = id;
 			this.password = password;
 			this.role = role;
