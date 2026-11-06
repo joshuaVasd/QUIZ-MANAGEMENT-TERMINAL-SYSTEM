@@ -21,10 +21,13 @@ public class Main {
 		}
 	}
 
+	static class
+
 	static class Student extends User {
 		String course;
 		int Year;
 		char Block;
+		ArrayList<Integer> grade = new ArrayList<>(); 
 
 		Student(String name, String id, String password, String role, String course, int Year, char Block) {
 			super(name, id, password, role);
@@ -35,8 +38,13 @@ public class Main {
 
 		@Override
 		public void userInfo() {
-			System.out.println("ID: " + id + " | Name: " + name + " | Role: " + role
-			                   + " | " + course + " " + Year + "-" + Block);
+			System.out.println("ID: " + id + " | Name: " + name + " | Role: " + role + " | " + course + " " + Year + "-" + Block);
+		}
+
+		public void grades(){
+			for(int i = 0; i < grade.size(); i++){
+				
+			}
 		}
 	}
 
