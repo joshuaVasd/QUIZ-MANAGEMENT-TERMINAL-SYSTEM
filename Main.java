@@ -3,56 +3,8 @@ import java.util.*;
 
 public class Main {
 
-	static class User {
-		String name;
-		String id;
-		String password;
-		String role; // "ADMIN", "INSTRUCTOR", "STUDENT"
-
-		User(String name, String id, String password, String role) {
-			this.name = name;
-			this.id = id;
-			this.password = password;
-			this.role = role;
-		}
-
-		public void userInfo() {
-			System.out.println("ID: " + id + " | Name: " + name + " | Role: " + role);
-		}
-	}
-
-	static class
-
-	static class Student extends User {
-		String course;
-		int Year;
-		char Block;
-		ArrayList<Integer> grade = new ArrayList<>(); 
-
-		Student(String name, String id, String password, String role, String course, int Year, char Block) {
-			super(name, id, password, role);
-			this.course = course;
-			this.Year = Year;
-			this.Block = Block;
-		}
-
-		@Override
-		public void userInfo() {
-			System.out.println("ID: " + id + " | Name: " + name + " | Role: " + role + " | " + course + " " + Year + "-" + Block);
-		}
-
-		public void grades(){
-			for(int i = 0; i < grade.size(); i++){
-				
-			}
-		}
-	}
-
-
 	static ArrayList<User> users = new ArrayList<>();
 	static Scanner sc = new Scanner(System.in);
-
-
 
 	// ---------- Start ----------
 	public static void main(String[] args) {
