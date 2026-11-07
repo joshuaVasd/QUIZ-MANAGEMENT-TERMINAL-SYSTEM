@@ -19,7 +19,9 @@ public class Main {
 	// ---------- Main Menu  ----------
 	static void mainMenu() {
 		while (true) {
-			System.out.println("\n===== MAIN MENU =====");
+			System.out.println("\n==============================");
+			System.out.println("QUIZ MANAGEMENT SYSTEM");
+			System.out.println("==============================");
 			System.out.println("1. Login");
 			System.out.println("2. Change password");
 			System.out.println("3. Exit");
@@ -126,10 +128,10 @@ public class Main {
 			adminDashboard(user);          // pass the logged-in admin so they can't delete themselves
 			break;
 		case "INSTRUCTOR":
-			instructorDashboard();
+			instructorDashboard(user);
 			break;
 		case "STUDENT":
-			studentDashboard();
+			studentDashboard(user);
 			break;
 		}
 	}
@@ -160,6 +162,69 @@ public class Main {
 					default -> System.out.println("Invalid choice.");
 			}
 		}
+	}
+
+	// ---------- instructor ----------
+	static void instructorDashboard(User Instructor) {
+		while (true) {
+			System.out.println("\n===== INSTRUCTOR DASHBOARD =====");
+			System.out.println("1. Create quiz");
+			System.out.println("2. View student grade");
+			System.out.println("3. View created quiz status");
+			System.out.println("4. Logout");
+			System.out.print("Select task: ");
+			String choice = sc.nextLine().trim();
+
+			switch (choice) {
+				case "1" -> createQuiz();
+			}
+		}
+	}
+
+
+	// ---------- Student ----------
+	static void studentDashboard(User Student) {
+		while (true) {
+			System.out.println("\n===== STUDENT DASHBOARD =====");
+			System.out.println("1. View instructor list");
+			System.out.println("2. View and take quiz");
+			System.out.println("3. View grades");
+			System.out.println("4. Logout");
+			System.out.print("Select task: ");
+			String choice = sc.nextLine().trim();
+
+			if (choice.equals("4")) return;
+			else if (choice.equals("1")) System.out.println("(Instructor list: not implemented yet)");
+			else if (choice.equals("2")) System.out.println("(Take quiz: not implemented yet)");
+			else if (choice.equals("3")) System.out.println("(View grades: not implemented yet)");
+			else System.out.println("Invalid choice.");
+		}
+	}
+
+
+	// Create quiz
+	static void createQuiz(){
+		System.out.print("Enter subject: ");
+		String subject = sc.nextLine();
+		System.out.println("1.Multiple choice");
+		System.out.println("2.True or false");
+		System.out.print("Enter type of quiz: ");
+		int quizType = sc.nextInt();
+		int quizNum = 0;
+		while(quizNum <= 0 || quizNum > 30){
+			System.out.print("Enter amount of questions: ");
+			if(sc.hasNextInt()){
+				quizNum = sc.nextInt();
+			}else{
+				sc.next();
+				System.out.println("Enter from 1-30 only");
+			}
+		}
+		int quizTime = 0;
+		System.out.println("can be from 1-20");
+		System.out.print("Enter time limit(minutes): ");
+		quizTime = sc.nextInt();
+
 	}
 
 	// Add user: asks once, adds one user, then returns to the dashboard
@@ -307,45 +372,4 @@ public class Main {
 		}
 	}
 
-
-
-	// ---------- instructor ----------
-	static void instructorDashboard() {
-		while (true) {
-			System.out.println("\n===== INSTRUCTOR DASHBOARD =====");
-			System.out.println("1. Create quiz");
-			System.out.println("2. View student grade");
-			System.out.println("3. View created quiz status");
-			System.out.println("4. Logout");
-			System.out.print("Select task: ");
-			String choice = sc.nextLine().trim();
-
-			if (choice.equals("4")) return;
-			else if (choice.equals("1")) System.out.println("(Create quiz: not implemented yet)");
-			else if (choice.equals("2")) System.out.println("(View student grade: not implemented yet)");
-			else if (choice.equals("3")) System.out.println("(View quiz status: not implemented yet)");
-			else System.out.println("Invalid choice.");
-		}
-	}
-
-
-
-	// ---------- Student ----------
-	static void studentDashboard() {
-		while (true) {
-			System.out.println("\n===== STUDENT DASHBOARD =====");
-			System.out.println("1. View instructor list");
-			System.out.println("2. View and take quiz");
-			System.out.println("3. View grades");
-			System.out.println("4. Logout");
-			System.out.print("Select task: ");
-			String choice = sc.nextLine().trim();
-
-			if (choice.equals("4")) return;
-			else if (choice.equals("1")) System.out.println("(Instructor list: not implemented yet)");
-			else if (choice.equals("2")) System.out.println("(Take quiz: not implemented yet)");
-			else if (choice.equals("3")) System.out.println("(View grades: not implemented yet)");
-			else System.out.println("Invalid choice.");
-		}
-	}
 }
