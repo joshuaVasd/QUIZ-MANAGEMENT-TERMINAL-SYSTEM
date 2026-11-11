@@ -42,6 +42,8 @@ public class Main {
 
 
 	static ArrayList<User> users = new ArrayList<>();
+	static ArrayList<Quiz> quizzes = new ArrayList<>();
+	static ArrayList<Result> results = new ArrayList<>();
 	static Scanner sc = new Scanner(System.in);
 
 
@@ -166,7 +168,7 @@ public class Main {
 			adminDashboard(user);          // pass the logged-in admin so they can't delete themselves
 			break;
 		case "INSTRUCTOR":
-			instructorDashboard();
+			instructorDashboard(user);     // pass the logged-in instructor so grades are filtered to their own quizzes
 			break;
 		case "STUDENT":
 			studentDashboard();
@@ -350,7 +352,7 @@ public class Main {
 
 
 	// ---------- instructor ----------
-	static void instructorDashboard() {
+	static void instructorDashboard(User instructor) {
 		while (true) {
 			System.out.println("\n===== INSTRUCTOR DASHBOARD =====");
 			System.out.println("1. Create quiz");
@@ -362,10 +364,20 @@ public class Main {
 
 			if (choice.equals("4")) return;
 			else if (choice.equals("1")) System.out.println("(Create quiz: not implemented yet)");
-			else if (choice.equals("2")) System.out.println("(View student grade: not implemented yet)");
+			else if (choice.equals("2")) ViewStudentGrades.show(instructor);
 			else if (choice.equals("3")) System.out.println("(View quiz status: not implemented yet)");
 			else System.out.println("Invalid choice.");
 		}
+	}
+
+
+
+	// Finds a quiz by its number (returns null if there is none)
+	static Quiz findQuiz(int quizId) {
+		for (Quiz q : quizzes) {
+			if (q.id == quizId) return q;
+		}
+		return null;
 	}
 
 
