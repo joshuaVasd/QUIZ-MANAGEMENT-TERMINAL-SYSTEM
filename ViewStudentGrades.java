@@ -37,10 +37,8 @@ public class ViewStudentGrades {
 			Quiz q = Main.findQuiz(r.quizId);
 			if (q == null || !q.instructorId.equals(instructor.id)) continue;
 
-			double percent = r.total == 0 ? 0 : (r.score * 100.0) / r.total;
-			System.out.printf("Quiz #%d | %s | %d/%d (%.1f%%)%n",
-			                  q.id, q.subject, r.score, r.total, percent);
-			totalPercent += percent;
+			r.display(q);                    // the output is printed by Result.display()
+			totalPercent += r.getPercent();
 			count++;
 		}
 
