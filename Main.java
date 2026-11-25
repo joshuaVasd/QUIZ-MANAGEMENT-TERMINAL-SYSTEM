@@ -838,13 +838,21 @@ public class Main {
 			System.out.println("Password must be at least 6 characters.");
 		}
 
-		// id (format: 26-3088, must be unique)
+		// id (INSTRUCTOR: 0000, STUDENT: 00-0000, must be unique)
+		String idPattern = role.equals("INSTRUCTOR") ? "\\d{4}" : "\\d{2}-\\d{4}";
+		String idPrompt = role.equals("INSTRUCTOR")
+				? "Enter instructor ID (format 0000): "
+				: "Enter student ID (format 00-0000): ";
+		String idError = role.equals("INSTRUCTOR")
+				? "Invalid ID format. Use 4 digits (example: 3089)."
+				: "Invalid ID format. Use 2 digits, a dash, then 4 digits (example: 26-3088).";
+
 		String newId;
 		while (true) {
-			System.out.print("Enter user ID (format 26-3088): ");
+			System.out.print(idPrompt);
 			newId = sc.nextLine().trim();
-			if (!newId.matches("\\d{2}-\\d{4}")) {
-				System.out.println("Invalid ID format. Use 2 digits, a dash, then 4 digits (example: 26-3088).");
+			if (!newId.matches(idPattern)) {
+				System.out.println(idError);
 				continue;
 			}
 			if (idExists(newId)) {
@@ -855,16 +863,6 @@ public class Main {
 		}
 
 		if (role.equals("STUDENT")) {
-			/*
-			String course;
-			while (true) {
-				System.out.print("Enter course: ");
-				course = sc.nextLine().trim().toUpperCase();
-				if (!course.isEmpty()) break;
-				System.out.println("Course can't be empty.");
-			}
-			*/
-
 			int year = readInt("Enter year (1-4): ", 1, 4);
 
 			char block;
