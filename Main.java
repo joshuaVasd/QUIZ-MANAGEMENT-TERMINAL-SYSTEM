@@ -542,6 +542,7 @@ public class Main {
 		}
 		int year = readInt("Enter year (1-4): ", 1, 4);
 		char block;
+		/*
 		while (true) {
 			System.out.print("Enter block (single letter): ");
 			String b = sc.nextLine().trim().toUpperCase();
@@ -549,10 +550,11 @@ public class Main {
 				block = b.charAt(0);
 				break;
 			}
+		*/
 			System.out.println("Block must be a single letter.");
 		}
 
-		String label = course + " " + year + "-" + block;
+		String label = "BSIT" + " " + year + "-" + block;
 		if (subject.blocks.contains(label)) {
 			System.out.println(subject.name + " (" + instructor.name + ") is already assigned to " + label + ".");
 		} else {
@@ -776,6 +778,7 @@ public class Main {
 		}
 
 		if (role.equals("STUDENT")) {
+			/*
 			String course;
 			while (true) {
 				System.out.print("Enter course: ");
@@ -783,6 +786,7 @@ public class Main {
 				if (!course.isEmpty()) break;
 				System.out.println("Course can't be empty.");
 			}
+			*/
 
 			int year = readInt("Enter year (1-4): ", 1, 4);
 
@@ -797,7 +801,7 @@ public class Main {
 				System.out.println("Block must be a single letter.");
 			}
 
-			users.add(new Student(name, newId, password, role, course, year, block));
+			users.add(new Student(name, newId, password, role, "BSIT", year, block));
 		} else {
 			users.add(new User(name, newId, password, role));
 		}
