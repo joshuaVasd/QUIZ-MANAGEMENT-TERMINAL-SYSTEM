@@ -1,7 +1,7 @@
 public class Question {
     String text;
-    String[] choices;   // always 4 choices
-    int correct;        // index 0-3 of the correct choice
+    String[] choices;   // 4 choices for Multiple Choice, 2 choices (True/False) for True or False
+    int correct;        // index of the correct choice (0-3 or 0-1)
 
     Question(String text, String[] choices, int correct) {
         this.text = text;
@@ -9,7 +9,7 @@ public class Question {
         this.correct = correct;
     }
 
-    // Prints the question with its choices numbered 1-4
+    // Prints the question with its choices numbered starting from 1
     public void display(int number) {
         System.out.println("\nQ" + number + ". " + text);
         for (int i = 0; i < choices.length; i++) {

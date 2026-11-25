@@ -285,23 +285,38 @@ public class Main {
 		int count = readInt("Number of questions (1-20): ", 1, 20);
 		int timeLimit = readInt("Time limit in minutes (1-180): ", 1, 180);
 
-		Quiz quiz = new Quiz(subject, name, instructor, timeLimit);
+		System.out.println("\nSelect quiz type:");
+		System.out.println("1. Multiple Choice");
+		System.out.println("2. True or False");
+		int typeChoice = readInt("Select (1-2): ", 1, 2);
+		String quizType = (typeChoice == 1) ? Quiz.MULTIPLE_CHOICE : Quiz.TRUE_OR_FALSE;
+
+		Quiz quiz = new Quiz(subject, name, instructor, timeLimit, quizType);
 
 		for (int i = 1; i <= count; i++) {
 			System.out.println("\n-- Question " + i + " of " + count + " --");
 			String text = readNonEmpty("Question: ");
 
-			String[] choices = new String[4];
-			for (int c = 0; c < 4; c++) {
-				choices[c] = readNonEmpty("Choice " + (c + 1) + ": ");
+			String[] choices;
+			int correct;
+			if (quizType.equals(Quiz.MULTIPLE_CHOICE)) {
+				choices = new String[4];
+				for (int c = 0; c < 4; c++) {
+					choices[c] = readNonEmpty("Choice " + (c + 1) + ": ");
+				}
+				correct = readInt("Correct answer (1-4): ", 1, 4) - 1;
+			} else {
+				choices = new String[] { "True", "False" };
+				System.out.println("   1. True");
+				System.out.println("   2. False");
+				correct = readInt("Correct answer (1 = True, 2 = False): ", 1, 2) - 1;
 			}
 
-			int correct = readInt("Correct answer (1-4): ", 1, 4) - 1;
 			quiz.addQuestion(new Question(text, choices, correct));
 		}
 
 		quizzes.add(quiz);
-		System.out.println("\nQuiz \"" + quiz.name + "\" created. Status: PENDING - waiting for admin approval.");
+		System.out.println("\nQuiz \"" + quiz.name + "\" (" + quiz.type + ") created. Status: PENDING - waiting for admin approval.");
 	}
 
 	// Show every student's grades for quizzes made by this instructor
@@ -399,11 +414,11 @@ public class Main {
 		}
 
 		// let the admin look through the questions before deciding
-		System.out.println("\nReviewing: " + target.subject + " - " + target.name);
+		System.out.println("\nReviewing: " + target.subject + " - " + target.name + " [" + target.type + "]");
 		for (int i = 0; i < target.questions.size(); i++) {
 			Question q = target.questions.get(i);
 			q.display(i + 1);
-			System.out.println("   (Correct: " + (q.correct + 1) + ")");
+			System.out.println("   (Correct: " + (q.correct + 1) + ". " + q.choices[q.correct] + ")");
 		}
 
 		System.out.println("\n1. Approve");
@@ -444,6 +459,14 @@ public class Main {
 			} else {
 				subject.instructor = chosen;
 				System.out.println("Assigned to " + chosen.name);
+
+				String label = pickBlock();
+				if (label == null) {
+					System.out.println("No block selected. You can assign a block later.");
+				} else {
+					subject.blocks.add(label);
+					System.out.println(subject.name + " (" + chosen.name + ") assigned to block " + label + ".");
+				}
 			}
 		} else {
 			System.out.println("No instructors registered yet. Subject created without an instructor.");
@@ -493,13 +516,24 @@ public class Main {
 		}
 
 		// reuse the entry if the subject has no instructor yet, otherwise add a new one
-		Subject unassigned = findSubject(subjectName, null);
-		if (unassigned != null) {
-			unassigned.instructor = chosen;
+		Subject target = findSubject(subjectName, null);
+		if (target != null) {
+			target.instructor = chosen;
 		} else {
-			subjects.add(new Subject(subjectName, chosen));
+			target = new Subject(subjectName, chosen);
+			subjects.add(target);
 		}
 		System.out.println("Assigned " + subjectName + " to " + chosen.name);
+
+		String label = pickBlock();
+		if (label == null) {
+			System.out.println("No block selected. You can assign a block later.");
+		} else if (target.blocks.contains(label)) {
+			System.out.println(target.name + " (" + chosen.name + ") is already assigned to " + label + ".");
+		} else {
+			target.blocks.add(label);
+			System.out.println(target.name + " (" + chosen.name + ") assigned to block " + label + ".");
+		}
 	}
 
 	// Assign one instructor's subject to a block, so that block only gets that instructor's quizzes
@@ -533,28 +567,12 @@ public class Main {
 		}
 		Subject subject = theirs.get(readInt("Pick a subject (1-" + theirs.size() + "): ", 1, theirs.size()) - 1);
 
-		String course;
-		while (true) {
-			System.out.print("Enter course: ");
-			course = sc.nextLine().trim().toUpperCase();
-			if (!course.isEmpty()) break;
-			System.out.println("Course can't be empty.");
-		}
-		int year = readInt("Enter year (1-4): ", 1, 4);
-		char block;
-		/*
-		while (true) {
-			System.out.print("Enter block (single letter): ");
-			String b = sc.nextLine().trim().toUpperCase();
-			if (b.length() == 1 && Character.isLetter(b.charAt(0))) {
-				block = b.charAt(0);
-				break;
-			}
-		*/
-			System.out.println("Block must be a single letter.");
+		String label = pickBlock();
+		if (label == null) {
+			System.out.println("Cancelled.");
+			return;
 		}
 
-		String label = "BSIT" + " " + year + "-" + block;
 		if (subject.blocks.contains(label)) {
 			System.out.println(subject.name + " (" + instructor.name + ") is already assigned to " + label + ".");
 		} else {
@@ -562,6 +580,59 @@ public class Main {
 			System.out.println(subject.name + " (" + instructor.name + ") assigned to block " + label
 					+ ". Only this instructor's " + subject.name + " quizzes will reach that block.");
 		}
+	}
+
+	// Lists existing blocks to pick from, or lets the admin enter a new block manually (null if cancelled)
+	static String pickBlock() {
+		ArrayList<String> blocks = new ArrayList<>();
+		for (User u : users) {
+			if (u instanceof Student) {
+				Student s = (Student) u;
+				String label = s.course + " " + s.Year + "-" + s.Block;
+				if (!blocks.contains(label)) blocks.add(label);
+			}
+		}
+		for (Subject sub : subjects) {
+			for (String b : sub.blocks) {
+				if (!blocks.contains(b)) blocks.add(b);
+			}
+		}
+
+		System.out.println("\nAvailable blocks:");
+		for (int i = 0; i < blocks.size(); i++) {
+			System.out.println((i + 1) + ". " + blocks.get(i));
+		}
+		int manualOption = blocks.size() + 1;
+		System.out.println(manualOption + ". Enter a new block manually");
+
+		System.out.print("Pick a block (1-" + manualOption + ", blank to cancel): ");
+		String input = sc.nextLine().trim();
+		if (input.isEmpty()) return null;
+
+		try {
+			int n = Integer.parseInt(input);
+			if (n >= 1 && n <= blocks.size()) {
+				return blocks.get(n - 1);
+			}
+			if (n == manualOption) {
+				int year = readInt("Enter year (1-4): ", 1, 4);
+				char block;
+				while (true) {
+					System.out.print("Enter block (single letter): ");
+					String b = sc.nextLine().trim().toUpperCase();
+					if (b.length() == 1 && Character.isLetter(b.charAt(0))) {
+						block = b.charAt(0);
+						break;
+					}
+					System.out.println("Block must be a single letter.");
+				}
+				return "BSIT" + " " + year + "-" + block;
+			}
+		} catch (NumberFormatException e) {
+			// fall through
+		}
+		System.out.println("Invalid selection.");
+		return null;
 	}
 
 	static boolean hasInstructor() {
@@ -625,6 +696,7 @@ public class Main {
 				QuizGrade g = findGrade(student, q.name);
 				String state = (g == null) ? "Not taken" : "Taken - " + g.Grade + "/" + g.total;
 				System.out.println(q.subject + " - " + q.name
+						+ " | Type: " + q.type
 						+ " | Instructor: " + q.instructor.name
 						+ " | Items: " + q.questions.size()
 						+ " | Time: " + q.timeLimit + " min"
@@ -662,9 +734,13 @@ public class Main {
 	}
 
 	static void takeQuiz(Student student, Quiz quiz) {
-		System.out.println("\n===== " + quiz.subject + " - " + quiz.name + " =====");
+		System.out.println("\n===== " + quiz.subject + " - " + quiz.name + " (" + quiz.type + ") =====");
 		System.out.println("Time limit: " + quiz.timeLimit + " minute(s). The timer starts now.");
-		System.out.println("Answer with 1-4 for each question. Unanswered questions count as wrong.");
+		if (quiz.type.equals(Quiz.TRUE_OR_FALSE)) {
+			System.out.println("Answer with 1 (True) or 2 (False) for each question. Unanswered questions count as wrong.");
+		} else {
+			System.out.println("Answer with 1-4 for each question. Unanswered questions count as wrong.");
+		}
 
 		long deadline = System.currentTimeMillis() + quiz.timeLimit * 60L * 1000L;
 		int score = 0;
@@ -680,7 +756,8 @@ public class Main {
 			Question q = quiz.questions.get(i);
 			System.out.println("\n[Time left: " + formatTime(remaining) + "]");
 			q.display(i + 1);
-			int answer = readInt("Your answer (1-4): ", 1, 4) - 1;
+			int max = q.choices.length;
+			int answer = readInt("Your answer (1-" + max + "): ", 1, max) - 1;
 
 			// an answer submitted after the deadline doesn't count
 			if (System.currentTimeMillis() > deadline) {
@@ -995,3 +1072,4 @@ public class Main {
 	}
 
 }
+
