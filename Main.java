@@ -16,7 +16,7 @@ public class Main {
 	public static void main(String[] args) {
 		//sample accounts
 		users.add(new User("joshua", "26-3088", "admin123", "ADMIN"));
-		users.add(new User("kent", "26-3089", "instructor123", "INSTRUCTOR"));
+		users.add(new User("kent", "3089", "instructor123", "INSTRUCTOR"));
 		users.add(new Student("racman", "25-3098", "student123", "STUDENT", "BSIT", 2, 'D'));
 
 		mainMenu();
